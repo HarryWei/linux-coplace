@@ -23,3 +23,10 @@ git rev-list --reverse $BRANCH | ruby -ne 'i ||= 0; i += 1; puts $_ if i % 20000
 
 git push --all $REMOTE 
 
+git push --tags new-origin
+git remote -v
+git remote rm origin
+git remote rename new-origin origin
+git branch --set-upstream-to=origin/master master 
+git pull
+
