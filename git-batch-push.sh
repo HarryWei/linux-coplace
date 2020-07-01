@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#https://github.com/HarryWei/research/commit/62860866a08a44899a6d8c6c40284f5df4ce0eed
+
 #https://gist.github.com/niksumeiko/8972566
 
 REMOTE=new-origin
