@@ -3474,6 +3474,47 @@ put_kvm:
 	return r;
 }
 
+//wwj
+static int kvm_get_memslots(void) {
+	struct kvm *kvm;
+	struct kvm_memslots *slots;
+	struct kvm_memory_slot *memslot;
+	int i = 0;
+	unsigned long maps_offset = 0;
+	char *memslots_maps = kmalloc(sizeof(char)*1024*1024, GFP_KERNEL_ACCOUNT);
+	if (!memslots_maps) {
+		printk(KERN_ERR "RDT: kmalloc error in function %s!\n", __func__);
+		return -ENOMEM;
+	}
+
+	mutex_lock(&kvm_lock);
+	list_for_each_entry(kvm, &vm_list, vm_list) {
+		for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++) {
+			slots = __kvm_memslots(kvm, i);
+			kvm_for_each_memslot(memslot, slots) {
+				gfn_t gfn_start = memslot->base_gfn;
+				gfn_t gfn_end = memslot->base_gfn + memslot->npages;
+				if (gfn_start >= gfn_end)
+					continue;
+
+				for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
+					unsigned long hva =  gfn_to_hva_memslot(memslot, gfn_start);
+					sprintf(memslots_maps+maps_offset, "%llu->%lu\n", gfn_start, hva);
+					maps_offset = strlen(memslots_maps) + 1;
+				}
+			}
+		}
+	}
+	mutex_unlock(&kvm_lock);
+
+	printk(KERN_WARNING "%s", memslots_maps);
+
+	if (memslots_maps) kfree(memslots_maps);
+
+	return 0;
+}
+//end
+
 static long kvm_dev_ioctl(struct file *filp,
 			  unsigned int ioctl, unsigned long arg)
 {
@@ -3507,9 +3548,12 @@ static long kvm_dev_ioctl(struct file *filp,
 	case KVM_TRACE_DISABLE:
 		r = -EOPNOTSUPP;
 		break;
+	//wwj
 	case KVM_GET_MEMSLOTS:
 		printk(KERN_WARNING "RDT: KVM_GET_MEMSLOTS's cmd is %x!\n", KVM_GET_MEMSLOTS);
+		kvm_get_memslots();
 		break;
+	//end
 	default:
 		return kvm_arch_dev_ioctl(filp, ioctl, arg);
 	}
