@@ -3502,7 +3502,7 @@ static int kvm_get_memslots(void) {
 				for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
 					unsigned long hva =  gfn_to_hva_memslot(memslot, gfn_start);
 					sprintf(memslots_maps+maps_offset, "%llx->%lx\n", gfn_start, hva);
-					maps_offset = strlen(memslots_maps) + 1;
+					maps_offset = strlen(memslots_maps);
 				}
 			}
 		}
