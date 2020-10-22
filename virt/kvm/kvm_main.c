@@ -3497,9 +3497,11 @@ static int kvm_get_memslots(void) {
 				if (gfn_start >= gfn_end)
 					continue;
 
+				printk(KERN_WARNING "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
+						memslot, memslot->base_gfn, memslot->npages, memslot->userspace_addr);
 				for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
 					unsigned long hva =  gfn_to_hva_memslot(memslot, gfn_start);
-					sprintf(memslots_maps+maps_offset, "%llu->%lu\n", gfn_start, hva);
+					sprintf(memslots_maps+maps_offset, "%llx->%lx\n", gfn_start, hva);
 					maps_offset = strlen(memslots_maps) + 1;
 				}
 			}
