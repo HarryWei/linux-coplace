@@ -3499,16 +3499,22 @@ static int kvm_get_memslots(void) {
 
 				printk(KERN_WARNING "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
 						memslot, memslot->base_gfn, memslot->npages, memslot->userspace_addr);
-				for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
+				sprintf(memslots_maps+maps_offset, "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
+						memslot, memslot->base_gfn, memslot->npages, memslot->userspace_addr);
+				maps_offset = strlen(memslots_maps);
+				/*for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
 					unsigned long hva =  gfn_to_hva_memslot(memslot, gfn_start);
 					sprintf(memslots_maps+maps_offset, "%llx->%lx\n", gfn_start, hva);
 					maps_offset = strlen(memslots_maps);
-				}
+				}*/
 			}
 		}
 	}
 	mutex_unlock(&kvm_lock);
 
+	/*for (i = 0; i < 2028; i++) {
+		printk(KERN_WARNING "%c", memslots_maps[i]);
+	}*/
 	printk(KERN_WARNING "%s", memslots_maps);
 
 	if (memslots_maps) kfree(memslots_maps);
