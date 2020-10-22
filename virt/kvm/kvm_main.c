@@ -3507,6 +3507,9 @@ static long kvm_dev_ioctl(struct file *filp,
 	case KVM_TRACE_DISABLE:
 		r = -EOPNOTSUPP;
 		break;
+	case KVM_GET_MEMSLOTS:
+		printk(KERN_WARNING "RDT: KVM_GET_MEMSLOTS's cmd is %x!\n", KVM_GET_MEMSLOTS);
+		break;
 	default:
 		return kvm_arch_dev_ioctl(filp, ioctl, arg);
 	}
