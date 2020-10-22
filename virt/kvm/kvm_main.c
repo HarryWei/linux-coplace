@@ -3475,15 +3475,51 @@ put_kvm:
 }
 
 //wwj
+static int kvm_get_memslots_num(void) {
+	int i = 0;
+	int j = 0;
+	struct kvm *kvm;
+	struct kvm_memslots *slots;
+	struct kvm_memory_slot *memslot;
+
+	mutex_lock(&kvm_lock);
+	list_for_each_entry(kvm, &vm_list, vm_list) {
+		for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++) {
+			slots = __kvm_memslots(kvm, i);
+			kvm_for_each_memslot(memslot, slots) {
+				gfn_t gfn_start = memslot->base_gfn;
+				gfn_t gfn_end = memslot->base_gfn + memslot->npages;
+				if (gfn_start >= gfn_end)
+					continue;
+
+				j += 1;
+			}
+		}
+	}
+	mutex_unlock(&kvm_lock);
+
+	return j;
+}
+
 static int kvm_get_memslots(void) {
 	struct kvm *kvm;
 	struct kvm_memslots *slots;
 	struct kvm_memory_slot *memslot;
 	int i = 0;
+	int j = 0;
+	int _j = 0;
 	unsigned long maps_offset = 0;
 	char *memslots_maps = kmalloc(sizeof(char)*1024*1024, GFP_KERNEL_ACCOUNT);
 	if (!memslots_maps) {
-		printk(KERN_ERR "RDT: kmalloc error in function %s!\n", __func__);
+		printk(KERN_ERR "RDT: kmalloc memslots_maps error in function %s!\n", __func__);
+		return -ENOMEM;
+	}
+
+	j = kvm_get_memslots_num();
+
+	struct kvm_memory_slot *_memslots = kmalloc(sizeof(struct kvm_memory_slot)*j, GFP_KERNEL_ACCOUNT);
+	if (!_memslots) {
+		printk(KERN_ERR "RDT: kmalloc _memslots error in function %s!\n", __func__);
 		return -ENOMEM;
 	}
 
@@ -3499,10 +3535,17 @@ static int kvm_get_memslots(void) {
 
 				printk(KERN_WARNING "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
 						memslot, memslot->base_gfn, memslot->npages, memslot->userspace_addr);
-				sprintf(memslots_maps+maps_offset, "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
+
+				if (_j < j) {
+					memcpy(&(_memslots[_j]), memslot, sizeof(struct kvm_memory_slot));
+					_j += 1;
+				} else {
+					printk(KERN_WARNING "RDT: real memslots are more than previous measured!\n");
+				}
+				/*sprintf(memslots_maps+maps_offset, "memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
 						memslot, memslot->base_gfn, memslot->npages, memslot->userspace_addr);
 				maps_offset = strlen(memslots_maps);
-				/*for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
+				for (gfn_start = memslot->base_gfn; gfn_start < gfn_end; gfn_start++) {
 					unsigned long hva =  gfn_to_hva_memslot(memslot, gfn_start);
 					sprintf(memslots_maps+maps_offset, "%llx->%lx\n", gfn_start, hva);
 					maps_offset = strlen(memslots_maps);
@@ -3512,12 +3555,18 @@ static int kvm_get_memslots(void) {
 	}
 	mutex_unlock(&kvm_lock);
 
+	for (i = 0; i < j; i++) {
+		printk(KERN_WARNING "_memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
+				&(_memslots[i]), _memslots[i].base_gfn, _memslots[i].npages, _memslots[i].userspace_addr);
+	}
+
 	/*for (i = 0; i < 2028; i++) {
 		printk(KERN_WARNING "%c", memslots_maps[i]);
 	}*/
-	printk(KERN_WARNING "%s", memslots_maps);
+	//printk(KERN_WARNING "%s", memslots_maps);
 
 	if (memslots_maps) kfree(memslots_maps);
+	if (_memslots) kfree(_memslots);
 
 	return 0;
 }
