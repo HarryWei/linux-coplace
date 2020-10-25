@@ -3508,12 +3508,12 @@ static int kvm_get_memslots(void) {
 	int i = 0;
 	int j = 0;
 	int _j = 0;
-	unsigned long maps_offset = 0;
+	/*unsigned long maps_offset = 0;
 	char *memslots_maps = kmalloc(sizeof(char)*1024*1024, GFP_KERNEL_ACCOUNT);
 	if (!memslots_maps) {
 		printk(KERN_ERR "RDT: kmalloc memslots_maps error in function %s!\n", __func__);
 		return -ENOMEM;
-	}
+	}*/
 
 	j = kvm_get_memslots_num();
 
@@ -3555,6 +3555,14 @@ static int kvm_get_memslots(void) {
 	}
 	mutex_unlock(&kvm_lock);
 
+	gfn_t _start;
+	gfn_t _end = _memslots[0].base_gfn+_memslots[0].npages;
+
+	for (_start = _memslots[0].base_gfn; _start < _end; _start++) {
+		unsigned long hva =  gfn_to_hva_memslot(&(_memslots[0]), _start);
+		printk(KERN_WARNING "%llx->%lx\n", _start, hva);
+	}
+
 	for (i = 0; i < j; i++) {
 		printk(KERN_WARNING "_memslot: %p, base_gfn: %llx, npages: %lu, hva: %lx\n",
 				&(_memslots[i]), _memslots[i].base_gfn, _memslots[i].npages, _memslots[i].userspace_addr);
@@ -3565,7 +3573,7 @@ static int kvm_get_memslots(void) {
 	}*/
 	//printk(KERN_WARNING "%s", memslots_maps);
 
-	if (memslots_maps) kfree(memslots_maps);
+	//if (memslots_maps) kfree(memslots_maps);
 	if (_memslots) kfree(_memslots);
 
 	return 0;
