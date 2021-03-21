@@ -41,6 +41,7 @@
 
 //hacked
 #include <linux/mem_reservations.h>
+#include <linux/module.h>
 //end
 
 #include <linux/kernel_stat.h>
@@ -98,6 +99,12 @@ EXPORT_SYMBOL(max_mapnr);
 struct page *mem_map;
 EXPORT_SYMBOL(mem_map);
 #endif
+
+//hacked
+int debug_ca_counter = 0;
+module_param(debug_ca_counter, int, 0644);
+EXPORT_SYMBOL_GPL(debug_ca_counter);
+//end
 
 /*
  * A number of key systems in x86 including ioremap() rely on the assumption
@@ -3007,7 +3014,10 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 	
 	//hacked
 	//page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
-	printk(KERN_INFO "CA-RESV: inside do_anonymous_page, vma->vm_mm->owner->pid is %d\n", vma->vm_mm->owner->pid);
+	if (debug_ca_counter < 100) {
+		printk(KERN_INFO "CA-RESV: inside do_anonymous_page, vma->vm_mm->owner->pid is %d\n", vma->vm_mm->owner->pid);
+		debug_ca_counter += 1;
+	}
 	if (GET_RM_ROOT(vma)) {
 		page = rm_alloc_from_reservation(vma, vmf->address);
 	} else {
