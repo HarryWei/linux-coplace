@@ -122,7 +122,7 @@
 #define MAX_THREADS FUTEX_TID_MASK
 
 //hacked
-extern int debug_ca_counter;
+extern int debug_ca_flag;
 //end
 
 /*
@@ -1049,9 +1049,8 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 
 	mm->user_ns = get_user_ns(user_ns);
 	//hacked
-	if (debug_ca_counter < 100) {
+	if (debug_ca_flag) {
 		printk(KERN_INFO "CA-RESV: inside mm_init, mm->owner->pid is %d\n", mm->owner->pid);
-		debug_ca_counter += 1;
 	}
 	my_app = (mm->owner->pid == 5555);
 	if (my_app) {
