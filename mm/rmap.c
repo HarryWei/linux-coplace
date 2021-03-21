@@ -1660,7 +1660,7 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
 		}
 discard:
 		//hacked
-		rm_release_reservation(vma, address);
+		//rm_release_reservation(vma, address);
 		//end
 		
 		/*

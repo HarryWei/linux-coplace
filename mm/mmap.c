@@ -2795,10 +2795,11 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 	}
 
 	//hacked
+	/*
 	it_addr = start;
 	for (; it_addr < end; it_addr += PAGE_SIZE) {
 		rm_release_reservation(vma, it_addr);
-	}
+	}*/
 	//end
 
 	/* Does it split the last one? */

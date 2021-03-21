@@ -689,12 +689,13 @@ void __mmdrop(struct mm_struct *mm)
 	check_mm(mm);
 	put_user_ns(mm->user_ns);
 	//hacked
+	/*
 	if (mm->memory_reservations) {
 		//debug
 		printk(KERN_INFO "ca-resv: -------------> Freeing the reservation map");
 		rm_destroy(mm->memory_reservations, 1);
 		mm->memory_reservations = NULL;
-	}
+	}*/
 	//end
 	free_mm(mm);
 }
@@ -1052,6 +1053,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 	if (debug_ca_flag) {
 		printk(KERN_INFO "CA-RESV: inside mm_init, mm->owner->pid is %d\n", mm->owner->pid);
 	}
+	/*
 	my_app = (mm->owner->pid == 5555);
 	if (my_app) {
 		mm->memory_reservations = rm_node_create();
@@ -1059,7 +1061,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 		printk(KERN_INFO "ca-resv: -----------> Creating the reservation map with root=%lx", mm->memory_reservations);
 	} else {
 		mm->memory_reservations = NULL;
-	}
+	}*/
 	//end
 	return mm;
 
