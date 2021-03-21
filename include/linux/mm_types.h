@@ -516,6 +516,9 @@ struct mm_struct {
 		/* HMM needs to track a few things per mm */
 		struct hmm *hmm;
 #endif
+		//hacked
+		struct rm_node *memory_reservations;
+		//end
 	} __randomize_layout;
 
 	/*

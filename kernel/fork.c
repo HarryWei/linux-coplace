@@ -12,6 +12,10 @@
  * management can be a bitch. See 'mm/memory.c': 'copy_page_range()'
  */
 
+//hacked
+#include <linux/mem_reservations.h>
+//end
+
 #include <linux/anon_inodes.h>
 #include <linux/slab.h>
 #include <linux/sched/autogroup.h>
@@ -680,6 +684,14 @@ void __mmdrop(struct mm_struct *mm)
 	mmu_notifier_mm_destroy(mm);
 	check_mm(mm);
 	put_user_ns(mm->user_ns);
+	//hacked
+	if (mm->memory_reservations) {
+		//debug
+		printk(KERN_INFO "ca-resv: -------------> Freeing the reservation map");
+		rm_destroy(mm->memory_reservations, 1);
+		mm->memory_reservations = NULL;
+	}
+	//end
 	free_mm(mm);
 }
 EXPORT_SYMBOL_GPL(__mmdrop);
@@ -987,6 +999,9 @@ static void mm_init_uprobes_state(struct mm_struct *mm)
 static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 	struct user_namespace *user_ns)
 {
+	//hacked
+	bool my_app;
+	//end
 	mm->mmap = NULL;
 	mm->mm_rb = RB_ROOT;
 	mm->vmacache_seqnum = 0;
@@ -1029,6 +1044,16 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 		goto fail_nocontext;
 
 	mm->user_ns = get_user_ns(user_ns);
+	//hacked
+	my_app = (mm->owner->pid == 5555);
+	if (my_app) {
+		mm->memory_reservations = rm_node_create();
+		// debug
+		printk(KERN_INFO "ca-resv: -----------> Creating the reservation map with root=%lx", mm->memory_reservations);
+	} else {
+		mm->memory_reservations = NULL;
+	}
+	//end
 	return mm;
 
 fail_nocontext:

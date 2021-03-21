@@ -53,6 +53,10 @@
 #include <asm/tlb.h>
 #include <asm/mmu_context.h>
 
+//hacked
+#include <linux/mem_reservations.h>
+//end
+
 #include "internal.h"
 
 #ifndef arch_mmap_check
@@ -2732,6 +2736,14 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 	unsigned long end;
 	struct vm_area_struct *vma, *prev, *last;
 
+	//hacked
+	unsigned long it_addr;
+
+	if (mm->owner->pid == 5555) {
+		printk(KERN_INFO "ca-recv: -------------> do_munmap");
+	}
+	//end
+
 	if ((offset_in_page(start)) || start > TASK_SIZE || len > TASK_SIZE-start)
 		return -EINVAL;
 
@@ -2781,6 +2793,13 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 			return error;
 		prev = vma;
 	}
+
+	//hacked
+	it_addr = start;
+	for (; it_addr < end; it_addr += PAGE_SIZE) {
+		rm_release_reservation(vma, it_addr);
+	}
+	//end
 
 	/* Does it split the last one? */
 	last = find_vma(mm, end);

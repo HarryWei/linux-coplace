@@ -242,6 +242,9 @@ enum node_stat_item {
 	NR_DIRTIED,		/* page dirtyings since bootup */
 	NR_WRITTEN,		/* page writings since bootup */
 	NR_KERNEL_MISC_RECLAIMABLE,	/* reclaimable non-slab kernel pages */
+	//hacked
+	NR_MEM_RESERVATIONS_RESERVED,  /* Number unused reserved pages in the memory reservation map */
+	//end
 	NR_VM_NODE_STAT_ITEMS
 };
 

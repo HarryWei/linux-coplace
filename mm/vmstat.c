@@ -1165,6 +1165,9 @@ const char * const vmstat_text[] = {
 	"nr_dirtied",
 	"nr_written",
 	"nr_kernel_misc_reclaimable",
+	//hacked
+	"nr_mem_reservations_reserved",
+	//end
 
 	/* enum writeback_stat_item counters */
 	"nr_dirty_threshold",
@@ -1289,6 +1292,12 @@ const char * const vmstat_text[] = {
 	"swap_ra",
 	"swap_ra_hit",
 #endif
+	//hacked
+	"nr_mem_reservations_alloc",
+	"nr_mem_reservations_alloc_failed",
+	"nr_mem_reservations_alloc_received_by_pid_5555",
+	"nr_mem_do_anonymus_page_for_pid_5555"
+	//end
 #endif /* CONFIG_VM_EVENTS_COUNTERS */
 };
 #endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA */
