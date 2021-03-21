@@ -3007,6 +3007,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 	
 	//hacked
 	//page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
+	printk(KERN_INFO "CA-RESV: inside do_anonymous_page, vma->vm_mm->owner->pid is %d\n", vma->vm_mm->owner->pid);
 	if (GET_RM_ROOT(vma)) {
 		page = rm_alloc_from_reservation(vma, vmf->address);
 	} else {
