@@ -2324,7 +2324,7 @@ static vm_fault_t wp_page_copy(struct vm_fault *vmf)
 			goto oom;
 	} else {
 		//hacked
-		//rm_release_reservation(vma, vmf->address);
+		rm_release_reservation(vma, vmf->address);
 		//end
 		new_page = alloc_page_vma(GFP_HIGHUSER_MOVABLE, vma,
 				vmf->address);
@@ -3002,18 +3002,19 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 	/* Allocate our own private page. */
 
 	//hacked
-	/*
-	if (vma->vm_mm->owner->pid == 5555) {
-		count_vm_event(MEM_DO_ANONYMUS_PAGE_FOR_PID_5555);
-	}*/
+	if (vma->vm_mm->owner != NULL) {
+		if (vma->vm_mm->owner->pid == 5555) {
+			count_vm_event(MEM_DO_ANONYMUS_PAGE_FOR_PID_5555);
+		}
+	}
 	//end
 	
 	if (unlikely(anon_vma_prepare(vma)))
 		goto oom;
 	
 	//hacked
-	page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
-	/*
+	//page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
+	
 	if (debug_ca_flag) {
 		printk(KERN_INFO "CA-RESV: inside do_anonymous_page, vma->vm_mm->owner->pid is %d\n", vma->vm_mm->owner->pid);
 	}
@@ -3027,7 +3028,7 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 	}
 	if (!page) {
 		page = alloc_zeroed_user_highpage_movable(vma, vmf->address);
-	}*/
+	}
 	//end
 
 	if (!page)

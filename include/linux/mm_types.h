@@ -529,6 +529,7 @@ struct mm_struct {
 
 		struct rm_test *mytest;*/
 
+		int _mytest;
 		struct rm_node *memory_reservations;
 		//end
 	} __randomize_layout;
