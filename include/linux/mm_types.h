@@ -29,8 +29,8 @@ struct mem_cgroup;
 struct hmm;
 
 //hacked
-struct rm_node;
-struct rm_test;
+//struct rm_node;
+//struct rm_test;
 //end
 
 /*
@@ -525,9 +525,9 @@ struct mm_struct {
 #endif
 		//hacked
 
-		int *_mytest;
+		/*int _mytest;
 
-		struct rm_test *mytest;
+		struct rm_test *mytest;*/
 
 		struct rm_node *memory_reservations;
 		//end
