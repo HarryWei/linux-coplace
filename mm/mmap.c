@@ -2740,8 +2740,10 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 	//hacked
 	unsigned long it_addr;
 
-	if (mm->owner->pid == 5555) {
-		printk(KERN_INFO "ca-recv: -------------> do_munmap");
+	if (mm->owner != NULL) {
+		if (mm->owner->pid == 5555) {
+			printk(KERN_INFO "ca-recv: -------------> do_munmap");
+		}
 	}
 	//end
 
@@ -2796,11 +2798,10 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 	}
 
 	//hacked
-	/*
 	it_addr = start;
 	for (; it_addr < end; it_addr += PAGE_SIZE) {
 		rm_release_reservation(vma, it_addr);
-	}*/
+	}
 	//end
 
 	/* Does it split the last one? */
