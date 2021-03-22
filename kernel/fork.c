@@ -12,9 +12,6 @@
  * management can be a bitch. See 'mm/memory.c': 'copy_page_range()'
  */
 
-//hacked
-#include <linux/mem_reservations.h>
-//end
 
 #include <linux/anon_inodes.h>
 #include <linux/slab.h>
@@ -122,6 +119,7 @@
 #define MAX_THREADS FUTEX_TID_MASK
 
 //hacked
+#include <linux/mem_reservations.h>
 extern int debug_ca_flag;
 //end
 
@@ -1008,6 +1006,25 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 	bool my_app;
 	//end
 	mm->mmap = NULL;
+
+	//hacked
+	if (debug_ca_flag) {
+		printk(KERN_INFO "CA-RESV: inside mm_init, mm->owner->pid is %d\n", mm->owner->pid);
+	}
+	
+	mm->_mytest = NULL;
+	//mm->memory_reservations = NULL;
+	//mm->mytest = NULL;
+	my_app = (mm->owner->pid == 5555);
+	if (my_app) {
+		//mm->memory_reservations = rm_node_create();
+		// debug
+		printk(KERN_INFO "ca-resv: -----------> Creating the reservation map with root=%lx", mm->memory_reservations);
+	} else {
+		//mm->memory_reservations = NULL;
+	}
+	//end
+
 	mm->mm_rb = RB_ROOT;
 	mm->vmacache_seqnum = 0;
 	atomic_set(&mm->mm_users, 1);
@@ -1049,20 +1066,6 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 		goto fail_nocontext;
 
 	mm->user_ns = get_user_ns(user_ns);
-	//hacked
-	if (debug_ca_flag) {
-		printk(KERN_INFO "CA-RESV: inside mm_init, mm->owner->pid is %d\n", mm->owner->pid);
-	}
-	/*
-	my_app = (mm->owner->pid == 5555);
-	if (my_app) {
-		mm->memory_reservations = rm_node_create();
-		// debug
-		printk(KERN_INFO "ca-resv: -----------> Creating the reservation map with root=%lx", mm->memory_reservations);
-	} else {
-		mm->memory_reservations = NULL;
-	}*/
-	//end
 	return mm;
 
 fail_nocontext:

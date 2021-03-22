@@ -53,11 +53,12 @@
 #include <asm/tlb.h>
 #include <asm/mmu_context.h>
 
+
+#include "internal.h"
+
 //hacked
 #include <linux/mem_reservations.h>
 //end
-
-#include "internal.h"
 
 #ifndef arch_mmap_check
 #define arch_mmap_check(addr, len, flags)	(0)

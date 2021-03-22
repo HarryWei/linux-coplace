@@ -39,10 +39,6 @@
  * Aug/Sep 2004 Changed to four level page tables (Andi Kleen)
  */
 
-//hacked
-#include <linux/mem_reservations.h>
-#include <linux/module.h>
-//end
 
 #include <linux/kernel_stat.h>
 #include <linux/mm.h>
@@ -101,6 +97,8 @@ EXPORT_SYMBOL(mem_map);
 #endif
 
 //hacked
+#include <linux/mem_reservations.h>
+#include <linux/module.h>
 int debug_ca_flag = 0;
 module_param(debug_ca_flag, int, 0644);
 EXPORT_SYMBOL_GPL(debug_ca_flag);

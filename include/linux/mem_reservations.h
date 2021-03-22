@@ -4,7 +4,6 @@
 #define _LINUX_MEM_RESEVATIONS_H
 
 #include <linux/spinlock.h>
-#include <linux/mm_types.h>
 
 #define RESERV_ORDER           3
 #define RESERV_SHIFT           (RESERV_ORDER + PAGE_SHIFT) // 3 + 12 = 15
@@ -31,6 +30,12 @@ struct rm_entry {
 struct rm_node {
   struct rm_entry items[RT_NODE_RANGE_SIZE];
 };
+
+struct rm_test {
+	int test;
+};
+
+#include <linux/mm_types.h>
 
 static inline unsigned int get_node_index(unsigned char level, unsigned long address) {
   unsigned int level_mask = (1 << RT_LEVEL_INDEX_LENGTH) - 1;
@@ -70,5 +75,6 @@ extern void rm_destroy(struct rm_node *node, unsigned char level);
 extern bool check_from_reservation(struct vm_area_struct *vma, unsigned long address);
 
 extern void rm_release_reservation(struct vm_area_struct *vma, unsigned long address);
+
 
 #endif /* _LINUX_MEM_RESEVATIONS_H */

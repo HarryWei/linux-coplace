@@ -2,6 +2,7 @@
 #ifndef _LINUX_MM_TYPES_H
 #define _LINUX_MM_TYPES_H
 
+
 #include <linux/mm_types_task.h>
 
 #include <linux/auxvec.h>
@@ -26,6 +27,11 @@
 struct address_space;
 struct mem_cgroup;
 struct hmm;
+
+//hacked
+struct rm_node;
+struct rm_test;
+//end
 
 /*
  * Each physical page in the system has a struct page associated with
@@ -511,12 +517,18 @@ struct mm_struct {
 		atomic_long_t hugetlb_usage;
 #endif
 		struct work_struct async_put_work;
+		
 
 #ifdef CONFIG_HMM_MIRROR
 		/* HMM needs to track a few things per mm */
 		struct hmm *hmm;
 #endif
 		//hacked
+
+		int *_mytest;
+
+		struct rm_test *mytest;
+
 		struct rm_node *memory_reservations;
 		//end
 	} __randomize_layout;

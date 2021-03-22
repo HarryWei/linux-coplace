@@ -66,15 +66,16 @@
 #include <linux/memremap.h>
 #include <linux/userfaultfd_k.h>
 
-//hacked
-#include <linux/mem_reservations.h>
-//end
 
 #include <asm/tlbflush.h>
 
 #include <trace/events/tlb.h>
 
 #include "internal.h"
+
+//hacked
+#include <linux/mem_reservations.h>
+//end
 
 static struct kmem_cache *anon_vma_cachep;
 static struct kmem_cache *anon_vma_chain_cachep;
