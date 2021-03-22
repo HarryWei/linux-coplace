@@ -121,6 +121,7 @@
 //hacked
 #include <linux/mem_reservations.h>
 extern int debug_ca_flag;
+extern int ca_pid;
 //end
 
 /*
@@ -1061,7 +1062,8 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
 	//mm->memory_reservations = NULL;
 	//mm->mytest = NULL;
 	if (mm->owner != NULL) {
-		my_app = (mm->owner->pid == 5555);
+		//my_app = (mm->owner->pid == 5555);
+		my_app = (mm->owner->pid == ca_pid);
 		if (my_app) {
 			mm->memory_reservations = rm_node_create();
 			// debug

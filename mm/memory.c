@@ -102,6 +102,10 @@ EXPORT_SYMBOL(mem_map);
 int debug_ca_flag = 0;
 module_param(debug_ca_flag, int, 0644);
 EXPORT_SYMBOL_GPL(debug_ca_flag);
+
+int ca_pid = 5555;
+module_param(ca_pid, int, 0644);
+EXPORT_SYMBOL_GPL(ca_pid);
 //end
 
 /*
@@ -3003,7 +3007,8 @@ static vm_fault_t do_anonymous_page(struct vm_fault *vmf)
 
 	//hacked
 	if (vma->vm_mm->owner != NULL) {
-		if (vma->vm_mm->owner->pid == 5555) {
+		//if (vma->vm_mm->owner->pid == 5555) {
+		if (vma->vm_mm->owner->pid == ca_pid) {
 			count_vm_event(MEM_DO_ANONYMUS_PAGE_FOR_PID_5555);
 		}
 	}

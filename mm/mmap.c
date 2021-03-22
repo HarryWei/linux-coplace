@@ -58,6 +58,7 @@
 
 //hacked
 #include <linux/mem_reservations.h>
+extern int ca_pid;
 //end
 
 #ifndef arch_mmap_check
@@ -2741,7 +2742,8 @@ int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
 	unsigned long it_addr;
 
 	if (mm->owner != NULL) {
-		if (mm->owner->pid == 5555) {
+		//if (mm->owner->pid == 5555) {
+		if (mm->owner->pid == ca_pid) {
 			printk(KERN_INFO "ca-recv: -------------> do_munmap");
 		}
 	}

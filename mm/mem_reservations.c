@@ -10,6 +10,8 @@
 #include <linux/vmstat.h>
 #include <linux/mem_reservations.h>
 
+extern int ca_pid;
+
 struct rm_node* rm_node_create() {
   struct rm_node* new = NULL;
   unsigned int i;
@@ -41,7 +43,8 @@ extern void rm_release_reservation(struct vm_area_struct *vma, unsigned long add
   gfp_t gfp           = ((GFP_HIGHUSER | __GFP_NOMEMALLOC | __GFP_NOWARN) & ~__GFP_RECLAIM);
 	unsigned long haddr = address & RESERV_MASK; 
   int region_offset   = (address & (~RESERV_MASK)) >> PAGE_SHIFT;
-  bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  //bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  bool my_app         = (vma->vm_mm->owner->pid == ca_pid);
 
   if (!my_app) 
     return;
@@ -116,7 +119,8 @@ bool check_from_reservation(struct vm_area_struct *vma, unsigned long address) {
   gfp_t gfp           = ((GFP_HIGHUSER | __GFP_NOMEMALLOC | __GFP_NOWARN) & ~__GFP_RECLAIM);
 	unsigned long haddr = address & RESERV_MASK; 
   int region_offset   = (address & (~RESERV_MASK)) >> PAGE_SHIFT;
-  bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  //bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  bool my_app         = (vma->vm_mm->owner->pid == ca_pid);
 
   if (!my_app) 
     return false;
@@ -176,7 +180,8 @@ struct page *rm_alloc_from_reservation(struct vm_area_struct *vma, unsigned long
   gfp_t gfp           = ((GFP_HIGHUSER | __GFP_NOMEMALLOC | __GFP_NOWARN) & ~__GFP_RECLAIM);
 	unsigned long haddr = address & RESERV_MASK; 
   int region_offset   = (address & (~RESERV_MASK)) >> PAGE_SHIFT;
-  bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  //bool my_app         = (vma->vm_mm->owner->pid == 5555);
+  bool my_app         = (vma->vm_mm->owner->pid == ca_pid);
 
   if (!my_app) 
     return NULL;
