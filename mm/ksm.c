@@ -50,6 +50,12 @@
 #define DO_NUMA(x)	do { } while (0)
 #endif
 
+//hacked
+extern int ca_pid;
+extern int debug_ca_flag;
+extern int enable_ca_ksm;
+//end
+
 /**
  * DOC: Overview
  *
@@ -1221,6 +1227,23 @@ static int try_to_merge_one_page(struct vm_area_struct *vma,
 {
 	pte_t orig_pte = __pte(0);
 	int err = -EFAULT;
+
+	//hacked
+	if (vma->vm_mm->owner != NULL) {
+		if (vma->vm_mm->owner->pid == ca_pid) {
+			if (enable_ca_ksm == 1) {
+				unsigned long pfn1 = page_to_pfn(page);
+				unsigned long pfn2 = page_to_pfn(kpage);
+				unsigned long ksm_mask = 0x000000000001f000;
+				unsigned long pfn1_after_mask = pfn1 & ksm_mask;
+				unsigned long pfn2_after_mask = pfn2 & ksm_mask;
+				if (pfn1_after_mask != pfn2_after_mask) {
+					goto out;
+				}
+			}
+		}
+	}
+	//end
 
 	if (page == kpage)			/* ksm page forked */
 		return 0;

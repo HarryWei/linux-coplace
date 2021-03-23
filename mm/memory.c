@@ -106,6 +106,13 @@ EXPORT_SYMBOL_GPL(debug_ca_flag);
 int ca_pid = 5555;
 module_param(ca_pid, int, 0644);
 EXPORT_SYMBOL_GPL(ca_pid);
+
+int enable_ca_ksm = 0;
+module_param(enable_ca_ksm, int, 0644);
+EXPORT_SYMBOL_GPL(enable_ca_ksm);
+//int enable_ca_ksm_flag = 0;
+//module_param(enable_ca_ksm_flag, int, 0644);
+//EXPORT_SYMBOL_GPL(enable_ca_ksm_flag);
 //end
 
 /*
