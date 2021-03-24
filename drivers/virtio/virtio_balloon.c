@@ -330,7 +330,7 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
 			unsigned long pfn1 = (unsigned long) page_to_pfn(page);
 			unsigned long page_addr_after_mask = pfn1 & balloon_mask;
 
-			printk(KERN_INFO "%lx--->%lx\n", pfn1, page_addr_after_mask);
+			//printk(KERN_INFO "%lx--->%lx\n", pfn1, page_addr_after_mask);
 			if (j == 0) {
 				pages_addr_after_mask[j] = page_addr_after_mask;
 				j += 1;
