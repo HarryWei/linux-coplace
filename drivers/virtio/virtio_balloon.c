@@ -419,6 +419,10 @@ static void update_balloon_size(struct virtio_balloon *vb)
 {
 	u32 actual = vb->num_pages;
 
+	//hacked
+	printk(KERN_INFO "CA-balloon: update_balloon_size!\n");
+	//end
+
 	/* Legacy balloon config space is LE, unlike all other devices. */
 	if (!virtio_has_feature(vb->vdev, VIRTIO_F_VERSION_1))
 		actual = (__force u32)cpu_to_le32(actual);
@@ -777,6 +781,10 @@ static unsigned long shrink_balloon_pages(struct virtio_balloon *vb,
 {
 	unsigned long pages_freed = 0;
 
+	//hacked
+	printk(KERN_INFO "CA-balloon: shrink_balloon_pages!\n");
+	//end
+
 	/*
 	 * One invocation of leak_balloon can deflate at most
 	 * VIRTIO_BALLOON_ARRAY_PFNS_MAX balloon pages, so we call it
@@ -857,6 +865,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
 		goto out;
 	}
 
+	//hacked
+	printk(KERN_INFO "CA-balloon: inside virtballoon probe and before update balloon size func!\n");
+	//end
 	INIT_WORK(&vb->update_balloon_stats_work, update_balloon_stats_func);
 	INIT_WORK(&vb->update_balloon_size_work, update_balloon_size_func);
 	spin_lock_init(&vb->stop_update_lock);
@@ -998,6 +1009,10 @@ static int virtballoon_restore(struct virtio_device *vdev)
 {
 	struct virtio_balloon *vb = vdev->priv;
 	int ret;
+
+	//hacked
+	printk(KERN_INFO "CA-balloon: virtballoon_restore!\n");
+	//end
 
 	ret = init_vqs(vdev->priv);
 	if (ret)
