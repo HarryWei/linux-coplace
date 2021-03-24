@@ -304,6 +304,18 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
 	/* We can only do one array worth at a time. */
 	num = min(num, ARRAY_SIZE(vb->pfns));
 
+	//hacked
+	printk(KERN_INFO "CA-balloon: add %u pages to the guest!\n", num);
+	unsigned long pages_addr_after_mask[num];
+	unsigned long balloon_mask = 0x0000ff;
+	unsigned long i = 0;
+	unsigned long j = 0;
+	unsigned long _j = 0;
+	for (i = 0; i < num; i++) {
+		pages_addr_after_mask[i] = 0x000000;
+	}
+	//end
+
 	mutex_lock(&vb->balloon_lock);
 	/* We can't release more pages than taken */
 	num = min(num, (size_t)vb->num_pages);
@@ -312,9 +324,38 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
 		page = balloon_page_dequeue(vb_dev_info);
 		if (!page)
 			break;
+
+		//hacked
+		if (enable_ca_balloon == 1) {
+			unsigned long pfn1 = (unsigned long) page_to_pfn(page);
+			unsigned long page_addr_after_mask = pfn1 & balloon_mask;
+
+			printk(KERN_INFO "%lx--->%lx\n", pfn1, page_addr_after_mask);
+			if (j == 0) {
+				pages_addr_after_mask[j] = page_addr_after_mask;
+				j += 1;
+			} else {
+				for (_j = 0; _j < j; _j++) {
+					if (pages_addr_after_mask[_j] == page_addr_after_mask) {
+						if (vb->num_pfns >= VIRTIO_BALLOON_PAGES_PER_PAGE) {
+							vb->num_pfns -= VIRTIO_BALLOON_PAGES_PER_PAGE;
+						}
+					}
+					/*FIXME*/
+					vb->num_pages -= VIRTIO_BALLOON_PAGES_PER_PAGE;
+					goto CA_LEAK_BALLOON_OUT;
+				}
+				pages_addr_after_mask[j] = page_addr_after_mask;
+				j += 1;
+			}
+		}
+		//end
+
 		set_page_pfns(vb, vb->pfns + vb->num_pfns, page);
 		list_add(&page->lru, &pages);
 		vb->num_pages -= VIRTIO_BALLOON_PAGES_PER_PAGE;
+CA_LEAK_BALLOON_OUT:
+		_j = 0;
 	}
 
 	num_freed_pages = vb->num_pfns;
