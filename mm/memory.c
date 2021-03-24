@@ -113,6 +113,10 @@ EXPORT_SYMBOL_GPL(enable_ca_ksm);
 //int enable_ca_ksm_flag = 0;
 //module_param(enable_ca_ksm_flag, int, 0644);
 //EXPORT_SYMBOL_GPL(enable_ca_ksm_flag);
+
+int enable_ca_balloon = 0;
+module_param(enable_ca_balloon, int, 0644);
+EXPORT_SYMBOL_GPL(enable_ca_balloon);
 //end
 
 /*

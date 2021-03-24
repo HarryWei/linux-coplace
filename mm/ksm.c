@@ -1234,7 +1234,7 @@ static int try_to_merge_one_page(struct vm_area_struct *vma,
 			if (enable_ca_ksm == 1) {
 				unsigned long pfn1 = page_to_pfn(page);
 				unsigned long pfn2 = page_to_pfn(kpage);
-				unsigned long ksm_mask = 0x000000000001f000;
+				unsigned long ksm_mask = 0x00000f;
 				unsigned long pfn1_after_mask = pfn1 & ksm_mask;
 				unsigned long pfn2_after_mask = pfn2 & ksm_mask;
 				if (pfn1_after_mask != pfn2_after_mask) {

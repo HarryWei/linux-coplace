@@ -41,6 +41,12 @@
 static struct vfsmount *balloon_mnt;
 #endif
 
+//hacked
+extern int debug_ca_flag;
+extern int ca_pid;
+extern int enable_ca_balloon;
+//end
+
 enum virtio_balloon_vq {
 	VIRTIO_BALLOON_VQ_INFLATE,
 	VIRTIO_BALLOON_VQ_DEFLATE,
@@ -173,8 +179,27 @@ static unsigned fill_balloon(struct virtio_balloon *vb, size_t num)
 	struct page *page;
 	LIST_HEAD(pages);
 
+	//hacked
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk("CA-balloon: fill balloon - remove pages from the guest!\n");
+	}
+	//end
+
 	/* We can only do one array worth at a time. */
 	num = min(num, ARRAY_SIZE(vb->pfns));
+
+	//hacked
+	printk(KERN_INFO "CA-balloon: remove %u pages from the guest!\n", num);
+	unsigned long pages_addr_after_mask[num];
+	unsigned long balloon_mask = 0x0000ff;
+	unsigned long i = 0;
+	unsigned long j = 0;
+	unsigned long _j = 0;
+	unsigned long counter = 0;
+	for (i = 0; i < num; i++) {
+		pages_addr_after_mask[i] = 0x000000;
+	}
+	//end
 
 	for (num_pfns = 0; num_pfns < num;
 	     num_pfns += VIRTIO_BALLOON_PAGES_PER_PAGE) {
@@ -189,7 +214,40 @@ static unsigned fill_balloon(struct virtio_balloon *vb, size_t num)
 			break;
 		}
 
+		//balloon_page_push(&pages, page);
+
+		//printk("%lx\n", (unsigned long) page_to_pfn(page));
+		//hacked
+		if (enable_ca_balloon == 1) {
+			unsigned long pfn1 = (unsigned long) page_to_pfn(page);
+			unsigned long page_addr_after_mask = pfn1 & balloon_mask; 
+			//printk(KERN_INFO "%lx--->%lx\n", pfn1, page_addr_after_mask);
+#if 1
+			if (j == 0) {
+				pages_addr_after_mask[j] = page_addr_after_mask;
+				j += 1;
+			} else {
+				for (_j = 0; _j < j; _j++) {
+					if (pages_addr_after_mask[_j] == page_addr_after_mask) {
+						if (num_pfns >= VIRTIO_BALLOON_PAGES_PER_PAGE) {
+							num_pfns -= VIRTIO_BALLOON_PAGES_PER_PAGE;
+						}
+						/*FIXME*/
+						//__free_page(page);
+						goto CA_BALLOON_OUT;
+					}
+				}
+				pages_addr_after_mask[j] = page_addr_after_mask;
+				j += 1;
+			}
+#endif
+		}
+		
 		balloon_page_push(&pages, page);
+CA_BALLOON_OUT:
+		_j = 0;
+
+		//end
 	}
 
 	mutex_lock(&vb->balloon_lock);
@@ -236,6 +294,12 @@ static unsigned leak_balloon(struct virtio_balloon *vb, size_t num)
 	struct page *page;
 	struct balloon_dev_info *vb_dev_info = &vb->vb_dev_info;
 	LIST_HEAD(pages);
+
+	//hacked
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk("CA-balloon: leak balloon - request pages from the host!\n");
+	}
+	//end
 
 	/* We can only do one array worth at a time. */
 	num = min(num, ARRAY_SIZE(vb->pfns));
@@ -420,7 +484,9 @@ static void update_balloon_size(struct virtio_balloon *vb)
 	u32 actual = vb->num_pages;
 
 	//hacked
-	printk(KERN_INFO "CA-balloon: update_balloon_size!\n");
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk(KERN_INFO "CA-balloon: update_balloon_size!\n");
+	}
 	//end
 
 	/* Legacy balloon config space is LE, unlike all other devices. */
@@ -782,7 +848,9 @@ static unsigned long shrink_balloon_pages(struct virtio_balloon *vb,
 	unsigned long pages_freed = 0;
 
 	//hacked
-	printk(KERN_INFO "CA-balloon: shrink_balloon_pages!\n");
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk(KERN_INFO "CA-balloon: shrink_balloon_pages!\n");
+	}
 	//end
 
 	/*
@@ -866,7 +934,9 @@ static int virtballoon_probe(struct virtio_device *vdev)
 	}
 
 	//hacked
-	printk(KERN_INFO "CA-balloon: inside virtballoon probe and before update balloon size func!\n");
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk(KERN_INFO "CA-balloon: inside virtballoon probe and before update balloon size func!\n");
+	}
 	//end
 	INIT_WORK(&vb->update_balloon_stats_work, update_balloon_stats_func);
 	INIT_WORK(&vb->update_balloon_size_work, update_balloon_size_func);
@@ -1011,7 +1081,9 @@ static int virtballoon_restore(struct virtio_device *vdev)
 	int ret;
 
 	//hacked
-	printk(KERN_INFO "CA-balloon: virtballoon_restore!\n");
+	if (debug_ca_flag && enable_ca_balloon) {
+		printk(KERN_INFO "CA-balloon: virtballoon_restore!\n");
+	}
 	//end
 
 	ret = init_vqs(vdev->priv);
