@@ -1300,8 +1300,9 @@ void do_user_addr_fault(struct pt_regs *regs,
 	mm = tsk->mm;
 
 	//hacked
-	if (enable_pa_fault == 1) {
-		printk(KERN_INFO "PA_FAULT vaddr: %lx -----------> paddr: %lx\n", address, __phys_addr);
+	if (enable_pa_fault < 7168) {
+		printk(KERN_INFO "PA_FAULT vaddr: %lx -----------> paddr: %lx\n", address, __phys_addr(address));
+		enable_pa_fault += 1;
 	}
 	//end
 
