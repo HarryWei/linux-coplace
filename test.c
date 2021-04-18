@@ -46,9 +46,9 @@ int main(int argc, char **argv)
 	//while(1){
 		//usleep(500); //500us
 		//unsigned long begin = rdtsc();
-	//ioctl(fd, KVM_GET_MEMSLOTS, NULL);
+	ioctl(fd, KVM_GET_MEMSLOTS, NULL);
 	//ioctl(fd, KVM_GET_FAULTS, NULL);
-	ioctl(fd, KVM_SET_UNPRESET, NULL);
+	//ioctl(fd, KVM_SET_UNPRESET, NULL);
 		//unsigned long end = rdtsc();
 		//printf("napping %ld cycles\n", end - begin);
 	//}
