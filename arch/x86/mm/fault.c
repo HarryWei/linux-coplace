@@ -33,6 +33,13 @@
 #define CREATE_TRACE_POINTS
 #include <asm/trace/exceptions.h>
 
+//hacked
+#include <linux/module.h>
+int enable_pa_fault = 0;
+module_param(enable_pa_fault, int, 0644);
+EXPORT_SYMBOL_GPL(enable_pa_fault);
+//end
+
 /*
  * Returns 0 if mmiotrace is disabled, or if the fault is not
  * handled by mmiotrace:
@@ -1291,6 +1298,12 @@ void do_user_addr_fault(struct pt_regs *regs,
 
 	tsk = current;
 	mm = tsk->mm;
+
+	//hacked
+	if (enable_pa_fault == 1) {
+		printk(KERN_INFO "PA_FAULT vaddr: %lx -----------> paddr: %lx\n", address, __phys_addr);
+	}
+	//end
 
 	/* kprobes don't want to hook the spurious faults: */
 	if (unlikely(kprobe_page_fault(regs, X86_TRAP_PF)))
