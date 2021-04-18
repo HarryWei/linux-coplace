@@ -47,6 +47,19 @@
 #include <asm/kvm_page_track.h>
 #include "trace.h"
 
+//wwj
+#include <linux/module.h>
+int enable_kvm_faults = 0;
+module_param(enable_kvm_faults, int, 0644);
+EXPORT_SYMBOL_GPL(enable_kvm_faults);
+int kvm_faults_counter = 0;
+module_param(kvm_faults_counter, int, 0644);
+EXPORT_SYMBOL_GPL(kvm_faults_counter);
+//extern int enable_kvm_faults = 0;
+//extern int kvm_faults_counter = 0;
+//extern int enable_pa_fault = 0;
+//end
+
 /*
  * When setting this variable to true it enables Two-Dimensional-Paging
  * where the hardware walks 2 page tables:
@@ -4123,7 +4136,9 @@ check_hugepage_cache_consistency(struct kvm_vcpu *vcpu, gfn_t gfn, int level)
 	return kvm_mtrr_check_gfn_range_consistency(vcpu, gfn, page_num);
 }
 
-static int tdp_page_fault(struct kvm_vcpu *vcpu, gva_t gpa, u32 error_code,
+/*static int tdp_page_fault(struct kvm_vcpu *vcpu, gva_t gpa, u32 error_code,
+			  bool prefault)*/
+int tdp_page_fault(struct kvm_vcpu *vcpu, gva_t gpa, u32 error_code,
 			  bool prefault)
 {
 	kvm_pfn_t pfn;
@@ -4177,6 +4192,18 @@ static int tdp_page_fault(struct kvm_vcpu *vcpu, gva_t gpa, u32 error_code,
 	r = __direct_map(vcpu, gpa, write, map_writable, level, pfn, prefault);
 out_unlock:
 	spin_unlock(&vcpu->kvm->mmu_lock);
+
+	//wwj
+	if (enable_kvm_faults == 1) {
+		if (kvm_faults_counter < 7169) {
+			printk(KERN_INFO "PAGE_FAULT GFN: %llx -----------> PFN: %llx\n", gfn, pfn);
+		} else {
+			enable_kvm_faults = 0;
+			kvm_faults_counter = 0;
+		}
+	}
+	//end
+
 	kvm_release_pfn_clean(pfn);
 	return r;
 }
@@ -5382,6 +5409,7 @@ int kvm_mmu_page_fault(struct kvm_vcpu *vcpu, gva_t cr2, u64 error_code,
 	int r, emulation_type = 0;
 	enum emulation_result er;
 	bool direct = vcpu->arch.mmu->direct_map;
+
 
 	/* With shadow page tables, fault_address contains a GVA or nGPA.  */
 	if (vcpu->arch.mmu->direct_map) {

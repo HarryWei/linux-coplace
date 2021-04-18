@@ -805,6 +805,8 @@ struct kvm_ppc_resize_hpt {
 
 //wwj
 #define KVM_GET_MEMSLOTS       _IO(KVMIO,   0x0b)
+#define KVM_GET_FAULTS         _IO(KVMIO,   0x0c)
+#define KVM_SET_UNPRESET       _IO(KVMIO,   0x0d)
 //end
 
 /*

@@ -89,6 +89,19 @@ unsigned int halt_poll_ns_shrink;
 module_param(halt_poll_ns_shrink, uint, 0644);
 EXPORT_SYMBOL_GPL(halt_poll_ns_shrink);
 
+//wwj
+/*
+int enable_kvm_faults = 0;
+module_param(enable_kvm_faults, int, 0644);
+EXPORT_SYMBOL_GPL(enable_kvm_faults);
+int kvm_faults_counter = 0;
+module_param(kvm_faults_counter, int, 0644);
+EXPORT_SYMBOL_GPL(kvm_faults_counter);*/
+/*extern int enable_kvm_faults = 0;
+extern int kvm_faults_counter = 0;
+extern int enable_pa_fault = 0;*/
+//end
+
 /*
  * Ordering of locks:
  *
@@ -3617,6 +3630,15 @@ static long kvm_dev_ioctl(struct file *filp,
 	case KVM_GET_MEMSLOTS:
 		printk(KERN_WARNING "RDT: KVM_GET_MEMSLOTS's cmd is %x!\n", KVM_GET_MEMSLOTS);
 		kvm_get_memslots();
+		break;
+	case KVM_GET_FAULTS:
+		printk(KERN_WARNING "RDT: KVM_GET_FAULTS's cmd is %x!\n", KVM_GET_FAULTS);
+		//handles at /arch/x86/kvm/mmu.carch/x86/kvm/mmu.c: tdp_page_fault
+		//enable_kvm_faults = 1;
+		//kvm_faults_counter = 0;
+		break;
+	case KVM_SET_UNPRESET:
+		printk(KERN_WARNING "RDT: KVM_SET_UNPRESET's cmd is %x!\n", KVM_SET_UNPRESET);
 		break;
 	//end
 	default:
