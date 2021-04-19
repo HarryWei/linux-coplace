@@ -4197,6 +4197,7 @@ out_unlock:
 	if (enable_kvm_faults == 1) {
 		if (kvm_faults_counter < 7169) {
 			printk(KERN_INFO "PAGE_FAULT GFN[%d]: %llx -----------> PFN: %llx\n", kvm_faults_counter, gfn, pfn);
+			kvm_faults_counter += 1;
 		} else {
 			printk(KERN_INFO "END------------------------------------------------------------>\n");
 			enable_kvm_faults = 0;
