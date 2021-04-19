@@ -1,3 +1,6 @@
 [submodule "PTEditor"]
 	path = PTEditor
 	url = https://github.com/misc0110/PTEditor.git
+[submodule "nanoBench"]
+	path = nanoBench
+	url = https://github.com/andreas-abel/nanoBench.git
